@@ -4,7 +4,7 @@ Uses [Postgres advisory locks](http://www.postgresql.org/docs/9.2/static/view-pg
 
 ## Installation
 
-This gem requires Ruby 2.0+
+This gem requires Ruby 2.1+
 
 Add this line to your application's Gemfile:
 
