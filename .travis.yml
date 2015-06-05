@@ -5,6 +5,9 @@ rvm:
   - 2.2
   - ruby-head
 
+script:
+  - bundle exec rspec spec
+
 before_script:
   - psql -c 'create database pg_lock_test;' -U postgres
 
