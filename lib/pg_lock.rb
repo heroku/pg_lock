@@ -23,7 +23,7 @@ class PgLock
 
   def initialize(name:, attempts: 3, attempt_interval: 1, ttl: 60, connection: DEFAULT_CONNECTION.call, log: DEFAULT_LOGGER.call )
     self.name               = name
-    self.max_attempts       = attempts
+    self.max_attempts       = [attempts, 1].max
     self.attempt_interval   = attempt_interval
     self.ttl                = ttl || 0 # set this to 0 to disable the timeout
     self.log                = log

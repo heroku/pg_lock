@@ -60,13 +60,15 @@ end
 
 ## Retry Attempts
 
-By default if a lock cannot be aquired, `PgLock` will retry 3 times with a 1 second delay between tries. You can configure this behavior using `attempts` and `attempt_interval` arguments:
+By default if a lock cannot be aquired, `PgLock` will try 3 times with a 1 second delay between tries. You can configure this behavior using `attempts` and `attempt_interval` arguments:
 
 ```ruby
 PgLock.new(name: "all_your_base", attempts: 10, attempt_interval: 5).lock do
   # stuff
 end
 ```
+
+To run once use `attempts: 1`.
 
 ## Raise Error on Failed Lock
 
