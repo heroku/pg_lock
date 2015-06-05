@@ -1,0 +1,16 @@
+language: ruby
+rvm:
+  - 2.0
+  - 2.1
+  - 2.2
+  - ruby-head
+
+before_script:
+  - psql -c 'create database pg_lock_test;' -U postgres
+
+addons:
+  postgresql: "9.3"
+
+matrix:
+  allow_failures:
+    - rvm: ruby-head
