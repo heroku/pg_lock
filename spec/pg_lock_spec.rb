@@ -7,14 +7,14 @@ describe PgLock do
 
   it "only runs X times" do
     begin
-      count = rand(1..9)
-      log = PgLockSpawn.new_log_file
+      count = rand(2..9)
+      log   = PgLockSpawn.new_log_file
       10.times.map do
         Process.spawn("env COUNT=#{count} bundle exec ruby #{PgLockSpawn.fixture_path("run_x_times.rb")} >> #{log}")
       end.each do |pid|
         Process.wait(pid)
       end
-      expect(File.read(log).each_line.count {|x| x.include?("Running locked code") }).to eq(count)
+      expect_log_has_count(log: log, count: count)
     ensure
       FileUtils.remove_entry_secure log
     end
@@ -28,7 +28,7 @@ describe PgLock do
       end.each do |pid|
         Process.wait(pid)
       end
-      expect(File.read(log).each_line.count {|x| x.include?("Running locked code") }).to eq(1)
+      expect_log_has_count(log: log, count: 1)
     ensure
       FileUtils.remove_entry_secure log
     end
