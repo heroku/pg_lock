@@ -2,6 +2,8 @@
 
 Uses [Postgres advisory locks](http://www.postgresql.org/docs/9.2/static/view-pg-locks.html) to enable you to syncronize actions across multiple threads, processes, and even machines.
 
+[![Build Status](https://travis-ci.org/heroku/pg_lock.svg?branch=master)](https://travis-ci.org/heroku/pg_lock)
+
 ## Installation
 
 This gem requires Ruby 2.1+
