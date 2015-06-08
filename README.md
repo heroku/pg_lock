@@ -28,11 +28,7 @@ Create a `PgLock.new` instance and call the `lock` method to ensure exclusive ex
 
 ```ruby
 PgLock.new(name: "all_your_base").lock do
-  if open?
-    API.log(circuit_breaker: true, enabled: true, service: service)
-  else
-    open!(error_count)
-  end
+  # stuff
 end
 ```
 
