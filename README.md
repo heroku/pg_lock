@@ -1,6 +1,6 @@
 # PgLock
 
-Uses [Postgres advisory locks](http://www.postgresql.org/docs/9.2/static/view-pg-locks.html) to enable you to syncronize actions across multiple threads, processes, and even machines.
+Uses [Postgres advisory locks](http://www.postgresql.org/docs/9.2/static/view-pg-locks.html) to enable you to syncronize actions across processes and machines.
 
 [![Build Status](https://travis-ci.org/heroku/pg_lock.svg?branch=master)](https://travis-ci.org/heroku/pg_lock)
 
@@ -32,7 +32,30 @@ PgLock.new(name: "all_your_base").lock do
 end
 ```
 
-Now no matter how many times this code is executed across any number of machines, one block of code will be allowed to execute at a time. A lock name is required.
+Now no matter how many times this code is executed across any number of machines, one block of code will be allowed to execute at a time.
+
+## Session based locking
+
+The postgres lock is unique across different database sessions, if the same session tries to aquire the same lock it will succeed. So while `PgLock` will guarantee unique execution across machines and processes, it will not block the same process (sharing the same connection session) from running. For example while you would think the middle block would not run in this example:
+
+```ruby
+key = "all_your_base"
+PgLock.new(name: key).lock do
+  puts "First block called"
+  PgLock.new(name: key).lock do
+    puts "Second block called because it's sharing the same session"
+  end
+end
+```
+
+The result will be:
+
+```
+First block called
+Second block called because it's sharing the same session
+```
+
+If you need to syncronize code execution inside of the same process you should [use a mutex](http://ruby-doc.org/core-2.2.2/Mutex.html).
 
 ## Timeout
 
@@ -120,7 +143,7 @@ PgLock.new(name: "all_your_base", log: ->(data) { puts data.inspect }).lock do
 end
 ```
 
-One argument will be passed to the block, a hash of values. You can optionally define a default log for all instances:
+One argument will be passed to the block, a hash. You can optionally define a default log for all instances:
 
 ```ruby
 PgLock::DEFAULT_LOG = ->(data) { puts data.inspect }
@@ -140,7 +163,6 @@ end
 ```
 
 The object needs to respond to the `exec` method where the first argument is a query string, and the second is an array of bind arguments. For example to use with [sequel](https://github.com/jeremyevans/sequel) you could do something like this:
-
 
 ```ruby
 connection = Module do

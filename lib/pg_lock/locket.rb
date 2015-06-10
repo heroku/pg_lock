@@ -4,7 +4,7 @@ class PgLock
     attr_accessor :args, :connection
     def initialize(connection, lock_args)
       self.connection = connection
-      self.args  = lock_args
+      self.args       = lock_args
     end
 
     def lock
@@ -24,7 +24,7 @@ class PgLock
     end
 
     def active?
-      connection.exec(<<-eos, lock_args).getvalue(0,0) == "t"
+      connection.exec(<<-eos, args).getvalue(0,0) == "t"
         SELECT granted
         FROM pg_locks
         WHERE locktype = 'advisory' AND

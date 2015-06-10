@@ -2,25 +2,14 @@ require 'tempfile'
 
 $LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
 require 'pg_lock'
-require 'active_record'
 
-begin
-  ActiveRecord::Base.establish_connection(
-    adapter:  'postgresql',
-    database: 'pg_lock_test'
-  )
-  ActiveRecord::Base.connection.raw_connection.exec("select 1")
-rescue ActiveRecord::NoDatabaseError => e
-  msg = "\nCreate a database to continue `$ createdb pg_lock_test` \n" + e.message
-  raise e, msg
+require 'fixtures/fixture_helper'
+
+def expect_log_has_count(log:, count:, msg: "Running locked code")
+  contents = File.read(log)
+  actual   = contents.each_line.count {|x| x.include?(msg) }
+  expect(actual).to eq(count), "Expected #{msg.inspect} to occur #{count} times in but was #{actual}\n#{ contents }"
 end
-
-  def expect_log_has_count(log:, count:)
-    msg      = "Running locked code"
-    contents = File.read(log)
-    actual   = contents.each_line.count {|x| x.include?(msg) }
-    expect(actual).to eq(count), "Expected #{msg.inspect} to occur #{count} times in but was #{actual}\n#{ contents }"
-  end
 
 
 class PgLockSpawn
