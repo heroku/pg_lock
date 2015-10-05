@@ -8,7 +8,7 @@ require 'fixtures/fixture_helper'
 def expect_log_has_count(log:, count:, msg: "Running locked code")
   contents = File.read(log)
   actual   = contents.each_line.count {|x| x.include?(msg) }
-  expect(actual).to eq(count), "Expected #{msg.inspect} to occur #{count} times in but was #{ actual.inspect }\n#{ contents }"
+  expect(actual).to eq(count), "Expected #{msg.inspect} to occur #{count} times but was #{ actual.inspect } in:\n#{ contents.inspect }"
 end
 
 
