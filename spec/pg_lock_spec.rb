@@ -14,7 +14,7 @@ describe PgLock do
         Process.wait(pid)
       end
     expect_log_has_count(log: log, count: 1, msg: "PgLock::UnableToLockError")
-    rescue
+    ensure
       FileUtils.remove_entry_secure log
     end
   end
