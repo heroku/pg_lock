@@ -79,7 +79,7 @@ describe PgLock do
   it "only runs once" do
     begin
       log = PgLockSpawn.new_log_file
-      10.times.map do
+      5.times.map do
         Process.spawn("bundle exec ruby #{PgLockSpawn.fixture_path("lock_once.rb")} >> #{log}")
       end.each do |pid|
         Process.wait(pid)

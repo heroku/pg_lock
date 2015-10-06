@@ -34,7 +34,6 @@ def expect_output_has_message(out: , count: , msg: "Running locked code")
 end
 
 
-
 class PgLockSpawn
 
   attr_accessor :path, :frequency, :reap_duration, :config, :log, :ram, :pid, :puma_workers
