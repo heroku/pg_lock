@@ -5,11 +5,34 @@ require 'pg_lock'
 
 require 'fixtures/fixture_helper'
 
+require "open3"
+
 def expect_log_has_count(log:, count:, msg: "Running locked code")
   contents = File.read(log)
-  actual   = contents.each_line.count {|x| x.include?(msg) }
+  actual   = contents.scan(msg).count
   expect(actual).to eq(count), "Expected #{msg.inspect} to occur #{count} times but was #{ actual.inspect } in:\n#{ contents.inspect }"
 end
+
+
+def fixtures(name)
+  Pathname.new(File.expand_path("../fixtures", __FILE__)).join(name)
+end
+
+require 'open3'
+
+def run(cmd)
+  out = ""
+  Open3.popen3("#{cmd} 2>&1") do |stdin, stdout, stderr, wait_thr|
+    out = stdout.read
+  end
+  out
+end
+
+def expect_output_has_message(out: , count: , msg: "Running locked code")
+  actual   = out.scan(msg).count
+  expect(actual).to eq(count), "Expected #{msg.inspect} to occur #{count} times but was #{ actual.inspect } in:\n#{ out.inspect }"
+end
+
 
 
 class PgLockSpawn

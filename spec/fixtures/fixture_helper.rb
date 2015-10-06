@@ -2,6 +2,8 @@ require 'pg_lock'
 
 require 'active_record'
 
+STDOUT.sync = true
+
 begin
   ActiveRecord::Base.establish_connection(
     adapter:  'postgresql',

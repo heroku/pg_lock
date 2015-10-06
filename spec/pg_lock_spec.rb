@@ -7,16 +7,11 @@ describe PgLock do
 
   it "lock! raises an error" do
     key = testing_key("lock! raises an error")
-    log = PgLockSpawn.new_log_file
-    begin
-      PgLock.new(name: key).lock do
-        pid = Process.spawn("env PG_LOCK_KEY='#{ key }' bundle exec ruby #{ PgLockSpawn.fixture_path("lock!.rb") } &> #{log}")
-        Process.wait(pid)
-      end
-    expect_log_has_count(log: log, count: 1, msg: "PgLock::UnableToLockError")
-    ensure
-      FileUtils.remove_entry_secure log
+    out = ""
+    PgLock.new(name: key).lock do
+      out = run("env PG_LOCK_KEY='#{ key }' bundle exec ruby #{ PgLockSpawn.fixture_path("lock!.rb") }")
     end
+    expect_output_has_message(out: out, count: 1, msg: "PgLock::UnableToLockError")
   end
 
   it "attempts" do
