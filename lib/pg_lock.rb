@@ -48,7 +48,7 @@ class PgLock
 
   # A PgLock::UnableToLock is raised if the lock is not acquired.
   def lock!(exception_klass = PgLock::UnableToLockError)
-    if lock { yield if block_given? }
+    if lock { yield self if block_given? }
       # lock successful, do nothing
     else
       raise exception_klass.new(name: name, attempts: max_attempts)

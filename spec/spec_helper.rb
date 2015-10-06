@@ -2,25 +2,37 @@ require 'tempfile'
 
 $LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
 require 'pg_lock'
-require 'active_record'
 
-begin
-  ActiveRecord::Base.establish_connection(
-    adapter:  'postgresql',
-    database: 'pg_lock_test'
-  )
-  ActiveRecord::Base.connection.raw_connection.exec("select 1")
-rescue ActiveRecord::NoDatabaseError => e
-  msg = "\nCreate a database to continue `$ createdb pg_lock_test` \n" + e.message
-  raise e, msg
+require 'fixtures/fixture_helper'
+
+require "open3"
+
+def expect_log_has_count(log:, count:, msg: "Running locked code")
+  contents = File.read(log)
+  actual   = contents.scan(msg).count
+  expect(actual).to eq(count), "Expected #{msg.inspect} to occur #{count} times but was #{ actual.inspect } in:\n#{ contents.inspect }"
 end
 
-  def expect_log_has_count(log:, count:)
-    msg      = "Running locked code"
-    contents = File.read(log)
-    actual   = contents.each_line.count {|x| x.include?(msg) }
-    expect(actual).to eq(count), "Expected #{msg.inspect} to occur #{count} times in but was #{actual}\n#{ contents }"
+
+def fixtures(name)
+  Pathname.new(File.expand_path("../fixtures", __FILE__)).join(name)
+end
+
+require 'open3'
+
+def run(cmd)
+  out = ""
+  Open3.popen3("#{cmd} 2>&1") do |stdin, stdout, stderr, wait_thr|
+    out = stdout.read
   end
+  out
+end
+
+def expect_output_has_message(out: , count: , msg: "Running locked code")
+  actual   = out.scan(msg).count
+  expect(actual).to eq(count), "Expected #{msg.inspect} to occur #{count} times but was #{ actual.inspect } in:\n#{ out.inspect }"
+end
+
 
 
 class PgLockSpawn

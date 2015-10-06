@@ -2,6 +2,8 @@ require 'pg_lock'
 
 require 'active_record'
 
+STDOUT.sync = true
+
 begin
   ActiveRecord::Base.establish_connection(
     adapter:  'postgresql',
@@ -11,4 +13,8 @@ begin
 rescue ActiveRecord::NoDatabaseError => e
   msg = "\nCreate a database to continue `$ createdb pg_lock_test` \n" + e.message
   raise e, msg
+end
+
+def testing_key(base)
+  [base, ENV["TRAVIS_BUILD_ID"] , ENV["TRAVIS_JOB_ID"] ].compact.join(":")
 end
