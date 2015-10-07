@@ -5,8 +5,14 @@ require "pg_lock/version"
 
 class PgLock
   PG_LOCK_SPACE      = -2147483648
-  DEFAULT_CONNECTION = Proc.new do
-    defined?(ActiveRecord::Base) ? ActiveRecord::Base.connection.raw_connection : false
+  DEFAULT_CONNECTION_CONNECTOR = Proc.new do
+    if defined?(DEFAULT_CONNECTION)
+      DEFAULT_CONNECTION
+    elsif defined?(ActiveRecord::Base)
+      ActiveRecord::Base.connection.raw_connection
+    else
+      false
+    end
   end
 
   DEFAULT_LOGGER     = Proc.new do
@@ -21,7 +27,7 @@ class PgLock
   end
   UnableToLock = UnableToLockError
 
-  def initialize(name:, attempts: 3, attempt_interval: 1, ttl: 60, connection: DEFAULT_CONNECTION.call, log: DEFAULT_LOGGER.call )
+  def initialize(name:, attempts: 3, attempt_interval: 1, ttl: 60, connection: DEFAULT_CONNECTION_CONNECTOR.call, log: DEFAULT_LOGGER.call )
     self.name               = name
     self.max_attempts       = [attempts, 1].max
     self.attempt_interval   = attempt_interval
