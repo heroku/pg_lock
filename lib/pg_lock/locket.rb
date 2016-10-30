@@ -18,13 +18,13 @@ class PgLock
     end
 
     def aquired?
-      @lock[0]["pg_try_advisory_lock"] == "t"
+      [true, "t"].include?(@lock[0]["pg_try_advisory_lock"])
     rescue
       false
     end
 
     def active?
-      connection.exec(<<-eos, args).getvalue(0,0) == "t"
+      active = connection.exec(<<-eos, args).getvalue(0,0)
         SELECT granted
         FROM pg_locks
         WHERE locktype = 'advisory' AND
@@ -33,6 +33,8 @@ class PgLock
          classid = $1 AND
          objid = $2
       eos
+
+      [true, "t"].include?(active)
     end
   end
 end
