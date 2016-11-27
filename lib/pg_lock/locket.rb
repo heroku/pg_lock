@@ -1,6 +1,8 @@
 class PgLock
   # Holds the logic to aquire a lock and parse if locking was successful
   class Locket
+    TRUE_VALUES = [true, "t"].freeze
+
     attr_accessor :args, :connection
     def initialize(connection, lock_args)
       self.connection = connection
@@ -18,7 +20,7 @@ class PgLock
     end
 
     def aquired?
-      [true, "t"].include?(@lock[0]["pg_try_advisory_lock"])
+      TRUE_VALUES.include?(@lock[0]["pg_try_advisory_lock"])
     rescue
       false
     end
@@ -34,7 +36,7 @@ class PgLock
          objid = $2
       eos
 
-      [true, "t"].include?(active)
+      TRUE_VALUES.include?(active)
     end
   end
 end
