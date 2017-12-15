@@ -59,7 +59,7 @@ If you need to syncronize code execution inside of the same process you should [
 
 ## Timeout
 
-By default, locked blocks will timeout after 60 seconds of execution, the lock will be released and any code executing will be terminated by a `Timeout::Error` will be raised. You can lower or raise this value by passing in a `ttl` (time to live) argument:
+By default, locked blocks will timeout after 60 seconds of execution, the lock will be released and any code executing will be terminated by raising `Timeout::Error`. You can decrease or increase this value by passing in a `ttl` (time to live) argument:
 
 ```ruby
 begin
