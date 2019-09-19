@@ -29,6 +29,11 @@ describe PgLock do
     fails_to_lock.lock {}
   end
 
+  it 'return_result' do
+    key  = testing_key("return_result")
+    expect(PgLock.new(name: key, return_result: true).lock { 'result' }).to eq('result')
+  end
+
   it "ttl" do
     key  = testing_key("ttl")
     time = rand(2..4)
