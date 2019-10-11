@@ -27,7 +27,7 @@ class PgLock
   end
   UnableToLock = UnableToLockError
 
-  def initialize(name:, attempts: 3, attempt_interval: 1, ttl: 60, connection: DEFAULT_CONNECTION_CONNECTOR.call, log: DEFAULT_LOGGER.call, return_result: false)
+  def initialize(name:, attempts: 3, attempt_interval: 1, ttl: 60, connection: DEFAULT_CONNECTION_CONNECTOR.call, log: DEFAULT_LOGGER.call, return_result: true)
     self.name               = name
     self.max_attempts       = [attempts, 1].max
     self.attempt_interval   = attempt_interval
