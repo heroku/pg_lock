@@ -1,19 +1,20 @@
 language: ruby
+services:
+  - postgresql
 rvm:
-  - 2.2
-  - 2.3
   - 2.4
   - 2.5
+  - 2.6
   - ruby-head
 
 script:
   - bundle exec rspec spec
 
+before_install:
+  - gem install bundler
+
 before_script:
   - psql -c 'create database pg_lock_test;' -U postgres
-
-addons:
-  postgresql: "9.3"
 
 matrix:
   allow_failures:
