@@ -1,8 +1,10 @@
 # A Log of Changes!
 
-## [0.2.0] - 2019-10-11
+## Master - unreleased
 
-- Return the result evaluated inside the block
+## 0.2.0
+
+- Return the result evaluated inside the block (https://github.com/heroku/pg_lock/pull/10)
 
 ## [0.1.2] - 2017-12-06
 
