@@ -27,12 +27,13 @@ class PgLock
   end
   UnableToLock = UnableToLockError
 
-  def initialize(name:, attempts: 3, attempt_interval: 1, ttl: 60, connection: DEFAULT_CONNECTION_CONNECTOR.call, log: DEFAULT_LOGGER.call )
+  def initialize(name:, attempts: 3, attempt_interval: 1, ttl: 60, connection: DEFAULT_CONNECTION_CONNECTOR.call, log: DEFAULT_LOGGER.call, return_result: true)
     self.name               = name
     self.max_attempts       = [attempts, 1].max
     self.attempt_interval   = attempt_interval
     self.ttl                = ttl || 0 # set this to 0 to disable the timeout
     self.log                = log
+    self.return_result      = return_result
 
     connection or raise "Must provide a valid connection object"
     self.locket             = Locket.new(connection, [PG_LOCK_SPACE, key(name)])
@@ -41,12 +42,13 @@ class PgLock
   # Runs the given block if an advisory lock is able to be acquired.
   def lock(&block)
     if create
+      result = nil
       begin
-        Timeout::timeout(ttl, &block) if block_given?
+        result = Timeout::timeout(ttl, &block) if block_given?
       ensure
         delete
       end
-      return true
+      return_result ? result : true
     else
       return false
     end
@@ -97,6 +99,7 @@ class PgLock
     attr_accessor :ttl
     attr_accessor :name
     attr_accessor :log
+    attr_accessor :return_result
 
     def key(name)
       i = Zlib.crc32(name.to_s)
