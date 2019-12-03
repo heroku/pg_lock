@@ -26,6 +26,7 @@ class PgLock
     end
   end
   UnableToLock = UnableToLockError
+  NO_LOCK = Object.new
 
   def initialize(name:, attempts: 3, attempt_interval: 1, ttl: 60, connection: DEFAULT_CONNECTION_CONNECTOR.call, log: DEFAULT_LOGGER.call, return_result: true)
     self.name               = name
@@ -41,26 +42,18 @@ class PgLock
 
   # Runs the given block if an advisory lock is able to be acquired.
   def lock(&block)
-    if create
-      result = nil
-      begin
-        result = Timeout::timeout(ttl, &block) if block_given?
-      ensure
-        delete
-      end
-      return_result ? result : true
-    else
-      return false
-    end
+    result = internal_lock(&block)
+    return false if result == NO_LOCK
+    result
   end
 
   # A PgLock::UnableToLock is raised if the lock is not acquired.
   def lock!(exception_klass = PgLock::UnableToLockError)
-    if lock { yield self if block_given? }
-      # lock successful, do nothing
-    else
+    result = internal_lock { yield self if block_given? }
+    if result == NO_LOCK
       raise exception_klass.new(name: name, attempts: max_attempts)
     end
+    return result
   end
 
   def create
@@ -90,6 +83,20 @@ class PgLock
     locket.active?
   end
   alias :has_lock? :aquired?
+
+  private def internal_lock(&block)
+    if create
+      result = nil
+      begin
+        result = Timeout::timeout(ttl, &block) if block_given?
+      ensure
+        delete
+      end
+      return_result ? result : true
+    else
+      return NO_LOCK
+    end
+  end
 
   private
     attr_accessor :max_attempts
