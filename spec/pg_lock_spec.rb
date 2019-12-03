@@ -95,7 +95,6 @@ describe PgLock do
     end
   end
 
-
   it 'does not raise an error' do
     PgLock.new(name: testing_key("foo")) do
       puts 1
