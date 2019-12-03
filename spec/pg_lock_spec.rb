@@ -14,6 +14,13 @@ describe PgLock do
     expect_output_has_message(out: out, count: 1, msg: "PgLock::UnableToLockError")
   end
 
+  it "lock! can be called without raising an error" do
+    key = testing_key("lock! does not raise an error")
+    out = run("env PG_LOCK_KEY='#{key}' SLEEP_FOR=0 bundle exec ruby #{PgLockSpawn.fixture_path("lock!.rb")}")
+
+    expect_output_has_message(out: out, count: 1, msg: "done with lock!")
+  end
+
   it "attempts" do
     max_attempts = rand(2..9)
     key          = testing_key("attempts")
