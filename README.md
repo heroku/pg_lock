@@ -119,13 +119,13 @@ ensure
 end
 ```
 
-You can check on the status of a lock with the `aquired?` method:
+You can check on the status of a lock with the `acquired?` method:
 
 ```ruby
 begin
   lock = PgLock.new(name: "all_your_base")
   lock.create
-  if lock.aquired?
+  if lock.acquired?
     # do stuff
   end
 ensure

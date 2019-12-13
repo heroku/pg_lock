@@ -73,6 +73,19 @@ describe PgLock do
     end
   end
 
+  it "acquires correctly" do
+    key = testing_key("acquired_test")
+
+    begin
+      lock = PgLock.new(name: key).create
+
+      expect(lock.acquired?).to be true
+      expect(lock.aquired?).to be true
+    ensure
+      lock.delete
+    end
+  end
+
   it "only runs X times" do
     begin
       count = rand(2..9)

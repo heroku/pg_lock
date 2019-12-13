@@ -79,9 +79,16 @@ class PgLock
     end
   end
 
+  # Left the misspelled version of this method for backwards compatibility
   def aquired?
+    acquired?
+  end
+
+  def acquired?
     locket.active?
   end
+
+  alias :has_lock? :acquired?
   alias :has_lock? :aquired?
 
   private def internal_lock(&block)

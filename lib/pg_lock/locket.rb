@@ -11,7 +11,7 @@ class PgLock
 
     def lock
       @lock = connection.exec("select pg_try_advisory_lock($1,$2)", args)
-      return aquired?
+      return acquired?
     end
 
     def unlock
@@ -19,10 +19,15 @@ class PgLock
       @lock = false
     end
 
-    def aquired?
+    def acquired?
       TRUE_VALUES.include?(@lock[0]["pg_try_advisory_lock"])
     rescue
       false
+    end
+
+    # Left the misspelled version of this method for backwards compatibility
+    def aquired?
+      acquired?
     end
 
     def active?
