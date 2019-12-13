@@ -2,6 +2,10 @@
 
 ## Master - unreleased
 
+## 0.3.0
+
+- Fix method spelling (https://github.com/heroku/pg_lock/pull/16)
+
 ## 0.2.1
 
 - Fix regression where a block that returned a `false` would cause the `lock!` method to incorrectly raise an error (https://github.com/heroku/pg_lock/pull/15)
