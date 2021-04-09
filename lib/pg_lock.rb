@@ -89,7 +89,6 @@ class PgLock
   end
 
   alias :has_lock? :acquired?
-  alias :has_lock? :aquired?
 
   private def internal_lock(&block)
     if create
