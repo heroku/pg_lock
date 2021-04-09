@@ -121,4 +121,14 @@ describe PgLock do
     end
     expect(true).to eq(true)
   end
+
+  it 'returns false from acquired? when lock is not acquired' do
+    key = testing_key('not_acquired_test')
+
+    lock = PgLock.new(name: key)
+    acquired = lock.acquired?
+
+    expect(lock.acquired?).to be false
+    expect(lock.aquired?).to be false
+  end
 end
