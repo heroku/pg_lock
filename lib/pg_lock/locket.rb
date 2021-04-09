@@ -31,16 +31,20 @@ class PgLock
     end
 
     def active?
-      active = connection.exec(<<-eos, args).getvalue(0,0)
+      query = <<-eos
         SELECT granted
         FROM pg_locks
         WHERE locktype = 'advisory' AND
-         pid = pg_backend_pid() AND
-         mode = 'ExclusiveLock' AND
-         classid = $1 AND
-         objid = $2
+        pid = pg_backend_pid() AND
+        mode = 'ExclusiveLock' AND
+        classid = $1 AND
+        objid = $2
       eos
 
+      result = connection.exec(query, args)
+      return false if result.ntuples == 0
+
+      active = result.getvalue(0,0)
       TRUE_VALUES.include?(active)
     end
   end

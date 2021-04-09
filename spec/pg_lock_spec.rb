@@ -121,4 +121,30 @@ describe PgLock do
     end
     expect(true).to eq(true)
   end
+
+  it 'returns false from acquired? when lock is not acquired' do
+    key = testing_key('not_acquired_test')
+
+    lock = PgLock.new(name: key)
+    acquired = lock.acquired?
+
+    expect(lock.acquired?).to be false
+    expect(lock.aquired?).to be false
+  end
+
+  it 'is unlocked when exception is raised during logging' do
+    exception = Class.new(StandardError)
+    key = testing_key("log_exception_test")
+
+    begin
+      lock = PgLock.new(name: key, log: -> (_) { raise exception })
+      lock.lock do
+        puts 1
+      end
+    rescue exception
+      expect(lock.acquired?).to be false
+    ensure
+      # PgLock.new(name: key).delete
+    end
+  end
 end

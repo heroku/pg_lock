@@ -89,20 +89,17 @@ class PgLock
   end
 
   alias :has_lock? :acquired?
-  alias :has_lock? :aquired?
 
   private def internal_lock(&block)
     if create
       result = nil
-      begin
-        result = Timeout::timeout(ttl, &block) if block_given?
-      ensure
-        delete
-      end
+      result = Timeout::timeout(ttl, &block) if block_given?
       return_result ? result : true
     else
       return NO_LOCK
     end
+  ensure
+    delete if locket.acquired?
   end
 
   private
