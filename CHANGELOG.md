@@ -1,6 +1,11 @@
 # A Log of Changes!
 
-## Master - unreleased
+## Main - unreleased
+
+## 1.0.0
+
+- Fixed: Lock is now unlocked when an exception is raised in a log https://github.com/heroku/pg_lock/pull/17
+- Changed: Removed mis-spelling of "aquired" https://github.com/heroku/pg_lock/pull/17
 
 ## 0.3.0
 
